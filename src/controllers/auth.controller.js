@@ -2,6 +2,7 @@ const { jwtSecret } = require("../config/auth.config");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const Role = require("../models/role.model");
 
 const saltRounds = 10;
 
@@ -25,11 +26,18 @@ const signUp = async (req, res) => {
   }
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
+
+  const role = await Role.findOne({ name: "ROLE_USER" });
+
+  if (!role) {
+    return res.status(500).json({ msg: "Role not found" });
+  }
+
   const newUser = new User({
     username,
     email,
     password: hash,
-    roles: ["ROLE_USER"],
+    roles: role,
   });
 
   await newUser.save();

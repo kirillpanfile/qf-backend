@@ -6,7 +6,7 @@ const getAllUsers = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
   try {
-    const users = await User.find({}).skip(skip).limit(limit);
+    const users = await User.find({}).skip(skip).limit(limit).populate("roles");
     //send users without passworsd
     const usersWithoutPasswords = users.map((user) => {
       const userWithoutPassword = user.toObject();
@@ -54,7 +54,7 @@ const searchUsers = async (req, res) => {
   try {
     const users = await User.find({
       username: { $regex: name, $options: "i" },
-    });
+    }).populate("roles");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ msg: "Error searching users" });

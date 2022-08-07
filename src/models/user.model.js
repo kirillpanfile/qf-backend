@@ -16,8 +16,9 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   roles: {
-    type: [String],
-    enum: ["ROLE_USER", "ROLE_ADMIN"],
+    type: [mongoose.Schema.Types.ObjectId],
+    required: true,
+    ref: "Role",
   },
   recipes: [
     {

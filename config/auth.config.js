@@ -1,3 +1,1 @@
-module.exports = {
-  jwtSecret: process.env.JWT_SECRET,
-};
+"use strict";module.exports={jwtSecret:process.env.JWT_SECRET};

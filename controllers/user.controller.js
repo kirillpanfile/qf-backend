@@ -1,1 +1,1 @@
-const User = require("../models/user.model");
+"use strict";var User=require("../models/user.model");

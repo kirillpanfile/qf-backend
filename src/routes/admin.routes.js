@@ -4,7 +4,11 @@
 
 const router = require("express").Router();
 
-const { verifyToken, isAdmin } = require("../middleware/jwt.middleware");
+const {
+  verifyToken,
+  isAdmin,
+  signInAdmin,
+} = require("../middleware/jwt.middleware");
 const {
   getAllUsers,
   getPages,
@@ -16,7 +20,7 @@ const {
 const { signIn } = require("../controllers/auth.controller");
 
 // Sign in admin
-router.post("/signin", [verifyToken, isAdmin], signIn);
+router.post("/signin", [signInAdmin], signIn);
 
 // get all users
 router.get("/users", [verifyToken, isAdmin], getAllUsers);

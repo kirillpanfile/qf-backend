@@ -1,14 +1,23 @@
 const router = require("express").Router();
-const signUp = require("../controllers/auth.controller").signUp;
-const signIn = require("../controllers/auth.controller").signIn;
-const getMe = require("../controllers/auth.controller").getMe;
-const signInRemember = require("../controllers/auth.controller").signInRemember;
-const verifyJwt = require("../middleware/jwt.middleware").verifyToken;
-const isAdmin = require("../middleware/jwt.middleware").isAdmin;
 
+const {
+  signIn,
+  signUp,
+  getMe,
+  signInRemember,
+} = require("../controllers/auth.controller");
+const { isAdmin, verifyToken } = require("../middleware/jwt.middleware");
+
+// Sign up
 router.post("/signup", signUp);
+
+// Sign in
 router.post("/signin", signIn);
-router.post("/remember", [verifyJwt, isAdmin], signInRemember);
-router.get("/me", [verifyJwt], getMe);
+
+// Sign in with remember me
+router.post("/remember", [verifyToken, isAdmin], signInRemember);
+
+// Get current user
+router.get("/me", [verifyToken], getMe);
 
 module.exports = router;

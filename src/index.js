@@ -6,6 +6,11 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const dotenv = require("dotenv");
+const http = require("http");
+const https = require("https");
+
+http.globalAgent.maxSockets = Infinity;
+https.globalAgent.maxSockets = Infinity;
 
 dotenv.config();
 

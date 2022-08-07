@@ -1,1 +1,14 @@
-"use strict";var router=require("express").Router(),_require=require("../controllers/auth.controller"),signIn=_require.signIn,signUp=_require.signUp,getMe=_require.getMe,signInRemember=_require.signInRemember,_require2=require("../middleware/jwt.middleware"),isAdmin=_require2.isAdmin,verifyToken=_require2.verifyToken;router.post("/signup",signUp),router.post("/signin",signIn),router.post("/remember",[verifyToken,isAdmin],signInRemember),router.get("/me",[verifyToken],getMe),module.exports=router;
+const router = require("express").Router();
+const signUp = require("../controllers/auth.controller").signUp;
+const signIn = require("../controllers/auth.controller").signIn;
+const getMe = require("../controllers/auth.controller").getMe;
+const signInRemember = require("../controllers/auth.controller").signInRemember;
+const verifyJwt = require("../middleware/jwt.middleware").verifyToken;
+const isAdmin = require("../middleware/jwt.middleware").isAdmin;
+
+router.post("/signup", signUp);
+router.post("/signin", signIn);
+router.post("/remember", [verifyJwt, isAdmin], signInRemember);
+router.get("/me", [verifyJwt], getMe);
+
+module.exports = router;

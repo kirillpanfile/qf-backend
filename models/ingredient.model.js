@@ -1,1 +1,13 @@
-"use strict";var mongoose=require("mongoose"),ingredientSchema=new mongoose.Schema({lang:{en:{name:{type:String,required:!0,maxlength:100}}}});
+const mongoose = require("mongoose");
+
+const ingredientSchema = new mongoose.Schema({
+  lang: {
+    en: {
+      name: {
+        type: String,
+        required: true,
+        maxlength: 100,
+      },
+    },
+  },
+});

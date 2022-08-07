@@ -1,1 +1,17 @@
-"use strict";var router=require("express").Router(),_require=require("../middleware/jwt.middleware"),verifyToken=_require.verifyToken,isAdmin=_require.isAdmin,_require2=require("../controllers/recipe.controller"),getAllRecipes=_require2.getAllRecipes,getRecipeById=_require2.getRecipeById,createRecipe=_require2.createRecipe,deleteRecipe=_require2.deleteRecipe;router.get("/all",[verifyToken,isAdmin],getAllRecipes),router.get("/:id",[verifyToken,isAdmin],getRecipeById),router.delete("/:id",[verifyToken,isAdmin],deleteRecipe),router.post("/admin/create",[verifyToken,isAdmin],createRecipe),module.exports=router;
+const router = require("express").Router();
+const { verifyToken, isAdmin } = require("../middleware/jwt.middleware");
+const {
+  getAllRecipes,
+  getRecipeById,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
+} = require("../controllers/recipe.controller");
+
+router.get("/all", [verifyToken, isAdmin], getAllRecipes);
+router.get("/:id", [verifyToken, isAdmin], getRecipeById);
+router.delete("/:id", [verifyToken, isAdmin], deleteRecipe);
+
+router.post("/admin/create", [verifyToken, isAdmin], createRecipe);
+
+module.exports = router;

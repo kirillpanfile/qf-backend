@@ -1,11 +1,18 @@
-const config = require("../config/auth.config");
+const { jwtSecret } = require("../config/auth.config");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
-const jwtSecret = config.jwtSecret;
 const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
+/**
+ * @description - This function is used to sign up a new user
+ * @param {Object} req - request object
+ * @param {Object} res - response object
+ * @returns {Object} - response object
+ */
+
+//? Creates a new user
 const signUp = async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
@@ -22,16 +29,21 @@ const signUp = async (req, res) => {
     username,
     email,
     password: hash,
+    roles: ["ROLE_USER"],
   });
-  if (req.body.roles) {
-    newUser.roles = req.body.roles;
-  } else {
-    newUser.roles = ["ROLE_USER"];
-  }
+
   await newUser.save();
   res.status(201).json("User created");
 };
 
+/**
+ * @description - This function is used to sign in a user with remember me
+ * @param {Object} req - request object
+ * @param {Object} res - response object
+ * @returns {Object} - response object
+ */
+
+// Verify a user s X - Access - Token and a JWT.
 const signInRemember = async (req, res) => {
   const token = req.headers["x-access-token"];
   const decoded = jwt.verify(token, jwtSecret);
@@ -39,6 +51,13 @@ const signInRemember = async (req, res) => {
   const { password, ...others } = user._doc;
   return res.status(200).json(others);
 };
+
+/**
+ * @description - This function is used to sign in a user
+ * @param {Object} req - request object
+ * @param {Object} res - response object
+ * @returns {Object} - response object
+ */
 
 const signIn = async (req, res) => {
   const { username, password } = req.body;
@@ -60,6 +79,13 @@ const signIn = async (req, res) => {
     accessToken: token,
   });
 };
+
+/**
+ * @description - This function is used to sign up a new user
+ * @param {Object} req - request object
+ * @param {Object} res - response object
+ * @returns {Object} - response object
+ */
 
 const getMe = async (req, res) => {
   const token = req.headers["x-access-token"];

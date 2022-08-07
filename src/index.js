@@ -6,6 +6,11 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const dotenv = require("dotenv");
+const http = require("http");
+const https = require("https");
+
+http.globalAgent.maxSockets = Infinity;
+https.globalAgent.maxSockets = Infinity;
 
 dotenv.config();
 
@@ -36,6 +41,15 @@ mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true })
   .then(() => {
     console.log("Connected to database");
+    const Role = require("./models/role.model");
+    ["ROLE_USER", "ROLE_MODERATOR", "ROLE_SUPER_ADMIN"].forEach((e) => {
+      Role.findOne({ e }, (err, role) => {
+        if (!role) {
+          console.log("Creating role: " + e);
+          new Role({ name: e }).save();
+        }
+      });
+    });
   })
   .catch((err) => {
     console.log(`Error: ${err}`);
@@ -43,7 +57,7 @@ mongoose
 
 // routes
 app.use("/api/auth", require("./routes/user.routes"));
-app.use("/api/users", require("./routes/users.routes"));
+app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/recipes", require("./routes/recipe.routes"));
 
 app.listen(3000, () => {

@@ -38,7 +38,6 @@ const getRecipeById = async (req, res) => {
   }
 };
 const createRecipe = async (req, res) => {
-  console.log(req.body);
   try {
     const { title, description, steps, ingredients, image, lang, time, hot } =
       req.body;
@@ -53,8 +52,6 @@ const createRecipe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
-
-    console.log(user);
 
     const newRecipe = new Recipe({
       user: user._id,
@@ -73,7 +70,6 @@ const createRecipe = async (req, res) => {
     });
 
     newRecipe.save((err, recipe) => {
-      console.log(err);
       if (err) return res.status(500).json(err);
       res.status(201).json(recipe);
     });

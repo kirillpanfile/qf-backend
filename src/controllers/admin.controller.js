@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 
+// get all users
 const getAllUsers = async (req, res) => {
   const limit = 25;
   const page = parseInt(req.query.page) || 1;
@@ -18,12 +19,14 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// get total pages
 const getPages = async (req, res) => {
   const total = await User.countDocuments();
   const pages = Math.ceil(total / 25);
   res.status(200).json(pages);
 };
 
+// delete user
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
@@ -34,6 +37,7 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// delete multiple users
 const deleteMultipleUsers = async (req, res) => {
   const ids = req.body.ids;
   try {
@@ -44,6 +48,7 @@ const deleteMultipleUsers = async (req, res) => {
   }
 };
 
+// search users
 const searchUsers = async (req, res) => {
   const { name } = req.params;
   try {

@@ -4,7 +4,7 @@
   "description": "Backend writen on NodeJS ExpressJS & MongoDB",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon index.js"
   },
   "author": "kirillpanfile",
   "license": "ISC",

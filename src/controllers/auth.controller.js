@@ -15,7 +15,8 @@ const saltRounds = 10;
 
 //? Creates a new user
 const signUp = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, picture } = req.body;
+  console.log(req.body.picture);
   if (!username || !email || !password) {
     return res.status(400).json({ msg: "Please enter all fields" });
   }
@@ -38,6 +39,7 @@ const signUp = async (req, res) => {
     email,
     password: hash,
     roles: role,
+    picture,
   });
 
   await newUser.save();

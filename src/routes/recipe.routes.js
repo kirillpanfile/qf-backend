@@ -5,6 +5,7 @@ const {
   getRecipeById,
   createRecipe,
   deleteRecipe,
+  updateRecipe,
 } = require("../controllers/recipe.controller");
 
 // Get all recipes
@@ -19,4 +20,6 @@ router.delete("/:id", [verifyToken, isAdmin], deleteRecipe);
 // Create recipe
 router.post("/admin/create", [verifyToken, isAdmin], createRecipe);
 
+// Update recipe
+router.put("/admin/update", [verifyToken, isAdmin], updateRecipe);
 module.exports = router;

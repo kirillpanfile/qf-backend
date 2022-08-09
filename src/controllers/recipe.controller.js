@@ -83,31 +83,15 @@ const createRecipe = async (req, res) => {
   }
 };
 const updateRecipe = async (req, res) => {
-  // try {
-  //   const { id } = req.params;
-  //   const { title, description, steps, ingredients, tags, image, lang } =
-  //     req.body;
-  //   if (!langValidation(lang)) {
-  //     return res.status(400).json({ msg: "Invalid language" });
-  //   }
-  //   const decoded = jwt.verify(req.headers["x-access-token"], jwtSecret);
-  //   if (!decoded) {
-  //     return res.status(401).json({ msg: "Token validation error" });
-  //   }
-  //   const user = await User.findById(decoded.user._id);
-  //   if (!user) {
-  //     return res.status(404).json({ msg: "User not found" });
-  //   }
-  //   const recipe = await Recipe.findById(id);
-  //   if (!recipe) {
-  //     return res.status(404).json({ msg: "Recipe not found" });
-  //   }
-  //   if (recipe.user.toString() !== user._id.toString()) {
-  //     return res.status(401).json({ msg: "Unauthorized" });
-  //   }
-  // } catch (err) {
-  //   res.status(500).json(err);
-  // }
+  const { recipe } = req.body;
+  if (!oldRecipe) {
+    return res.status(400).json({ msg: "Recipe Not found" });
+  }
+  try {
+    await Recipe.findByIdAndUpdate(recipe._id, recipe);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 const deleteRecipe = async (req, res) => {
   try {

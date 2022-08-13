@@ -9,6 +9,8 @@ const dotenv = require("dotenv");
 const http = require("http");
 const https = require("https");
 
+const { Storage } = require("megajs");
+
 http.globalAgent.maxSockets = Infinity;
 https.globalAgent.maxSockets = Infinity;
 
@@ -59,6 +61,30 @@ mongoose
 app.use("/api/auth", require("./routes/user.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/recipes", require("./routes/recipe.routes"));
+
+const { API } = require("megajs");
+// Node doesn't support top-level await when using CJS
+(async function () {
+  const storage = new Storage({
+    email: "kirillpanfile@gmail.com",
+    password: "Asalamalecu12321",
+    userAgent: "ExampleClient/1.0",
+  });
+
+  // Will resolve once the user is logged in
+  // or reject if some error happens
+  await storage.ready;
+
+  const file = await storage.upload(
+    "image.png",
+    "ASIDGIUYOIASJDKJASHDYASGDJHSAGDBM"
+  ).complete;
+
+  console.log(file.id);
+})().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");

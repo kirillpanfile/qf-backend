@@ -8,7 +8,7 @@ const langValidation = (lang) =>
 
 const getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find({});
+    const recipes = await Recipe.find({}).populate("user");
     res.status(200).json(recipes);
   } catch (err) {
     res.status(500).json(err);

@@ -1,1 +1,66 @@
-"use strict";var express=require("express"),app=express(),cors=require("cors"),mongoose=require("mongoose"),cookieParser=require("cookie-parser"),compression=require("compression"),dotenv=require("dotenv"),http=require("http"),https=require("https");http.globalAgent.maxSockets=1/0,https.globalAgent.maxSockets=1/0,dotenv.config(),app.use(cors({origin:"*",methods:"GET,HEAD,PUT,PATCH,POST,DELETE",preflightContinue:!1,optionsSuccessStatus:204,withCredentials:!0,Credentials:"include"})).use(express.json()).use(express.urlencoded({extended:!0})).use(cookieParser()).use(compression({windowBits:15,level:9,memLevel:9,threshold:0})),mongoose.connect(process.env.MONGO_URI,{useNewUrlParser:!0}).then(function(){console.log("Connected to database");var s=require("./models/role.model");["ROLE_USER","ROLE_MODERATOR","ROLE_SUPER_ADMIN"].forEach(function(r){s.findOne({e:r},function(e,o){o||(console.log("Creating role: "+r),new s({name:r}).save())})})}).catch(function(e){console.log("Error: ".concat(e))}),app.use("/api/auth",require("./auth/auth.routes")),app.use("/api/users",require("./user/user.routes")),app.use("/api/recipe",require("./recipe/recipe.routes")),app.listen(3e3,function(){console.log("Server started on port 3000")});
+/** ==========================================================
+ * @description Index file for the application.
+ * @author: Panfile Kirill
+ * @app QuckFood
+ * ========================================================== */
+// import express from "express";
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const compression = require("compression");
+const bodyPrser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
+const MongoDBStore = require("connect-mongodb-session");
+
+dotenv.config();
+
+// Import utils and configs
+const { corsOptions, compressOptions } = require("./src/configs/config.js");
+const connect = require("./src/utils/mongoose.util.js");
+
+// Connect to the database
+const port = process.env.PORT || 3000;
+const URI = process.env.MONGO_URI;
+connect(URI);
+
+const mongoStore = new MongoDBStore(expressSession);
+const store = new mongoStore({
+  uri: process.env.MONGO_URI,
+  collection: "userSessions",
+  expires: 10000,
+});
+// App initialization
+const app = express();
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(
+  expressSession({
+    name: "quckfood",
+    secret: "quckfood",
+    resave: false,
+    saveUninitialized: false,
+    store,
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 1000,
+    },
+  })
+);
+app.use(compression(compressOptions));
+app.use(bodyPrser.urlencoded({ extended: true }));
+app.use(bodyPrser.json());
+
+//Routes
+const userRoutes = require("./src/routes/UserRoutes.js");
+const authRoutes = require("./src/routes/AuthRoutes.js");
+
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+
+app.listen(process.env.PORT, () => {
+  console.log("Server started on port " + port);
+});

@@ -1,0 +1,1 @@
+"use strict";var mongoose=require("mongoose"),RoleSchema=new mongoose.Schema({name:{type:String,required:!0,maxlength:100}});module.exports=mongoose.model("Role",RoleSchema);

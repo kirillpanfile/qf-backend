@@ -1,1 +1,0 @@
-"use strict";var mongoose=require("mongoose"),ingredientCategorySchema=new mongoose.Schema({lang:{en:{name:{type:String,required:!0}},ru:{name:{type:String,required:!0}},ro:{name:{type:String,required:!0}}},ingredients:[{type:mongoose.Schema.Types.ObjectId,ref:"Ingredient"}]});module.exports=mongoose.model("IngredientCategory",ingredientCategorySchema);

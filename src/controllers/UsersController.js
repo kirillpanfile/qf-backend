@@ -29,7 +29,6 @@ class UsersController {
   async getPages(req, res) {
     try {
       const pages = await UsersService.getPages(queryUtil(req.query));
-      console.log(pages);
       res.status(200).json(pages);
     } catch (err) {
       res.status(500).send(err);

@@ -28,7 +28,7 @@ const mongoStore = new MongoDBStore(expressSession);
 const store = new mongoStore({
   uri: process.env.MONGO_URI,
   collection: "userSessions",
-  expires: 10000,
+  expires: 1000 * 60 * 60 * 24 * 7, //   1 week
 });
 // App initialization
 const app = express();
@@ -37,16 +37,16 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(
   expressSession({
-    name: "quckfood",
-    secret: "quckfood",
+    name: "session",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "lax",
-      maxAge: 1000,
+      maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
     },
   })
 );

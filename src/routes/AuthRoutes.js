@@ -11,6 +11,6 @@ const { signUp, signIn, logOut, remember } = AuthController;
 router.post("/signup", signUp);
 router.get("/remember/:flag", [verifySession, signInPermission], remember);
 router.post("/signin/:flag", signInPermission, signIn);
-router.post("/logout", logOut);
+router.delete("/logout", [verifySession], logOut);
 
 module.exports = router;

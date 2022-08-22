@@ -27,6 +27,7 @@ class AuthController {
   }
 
   async logOut(req, res) {
+    console.log("1");
     try {
       req.session.destroy();
       res.clearCookie("session");

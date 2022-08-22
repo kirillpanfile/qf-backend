@@ -4,69 +4,71 @@
  * @app QuckFood
  * ========================================================== */
 // import express from "express";
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const compression = require("compression");
-const bodyPrser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const expressSession = require("express-session");
-const MongoDBStore = require("connect-mongodb-session");
+const express = require("express")
+const dotenv = require("dotenv")
+const cors = require("cors")
+const compression = require("compression")
+const bodyPrser = require("body-parser")
+const cookieParser = require("cookie-parser")
+const expressSession = require("express-session")
+const MongoDBStore = require("connect-mongodb-session")
 
-dotenv.config();
+dotenv.config()
 
 // Import utils and configs
-const { corsOptions, compressOptions } = require("./src/configs/config.js");
-const connect = require("./src/utils/mongoose.util.js");
+const { corsOptions, compressOptions } = require("./src/configs/config.js")
+const connect = require("./src/utils/mongoose.util.js")
 
 // Connect to the database
-const port = process.env.PORT || 3000;
-const URI = process.env.MONGO_URI;
-connect(URI);
+const port = process.env.PORT || 3000
+const URI = process.env.MONGO_URI
+connect(URI)
 
-const mongoStore = new MongoDBStore(expressSession);
+const mongoStore = new MongoDBStore(expressSession)
 const store = new mongoStore({
-  uri: process.env.MONGO_URI,
-  collection: "userSessions",
-  expires: 1000 * 60 * 60 * 24 * 7, //   1 week
-});
+    uri: process.env.MONGO_URI,
+    collection: "userSessions",
+    expires: 1000 * 60 * 60 * 24 * 7, //   1 week
+})
 // App initialization
-const app = express();
+const app = express()
 
 let sess = {
-  name: "session",
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  store,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
-  },
-};
+    name: "session",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store,
+    cookie: {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
+    },
+}
 
-app.use(expressSession(sess));
+app.use(expressSession(sess))
 
 if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1);
-  sess.cookie.secure = true;
+    app.set("trust proxy", 1)
+    sess.cookie.secure = true
+    sess.cookie.sameSite = "none"
 }
-app.use(cors(corsOptions));
-app.use(cookieParser());
 
-app.use(compression(compressOptions));
-app.use(bodyPrser.urlencoded({ extended: true }));
-app.use(bodyPrser.json());
+app.use(cors(corsOptions))
+app.use(cookieParser())
+
+app.use(compression(compressOptions))
+app.use(bodyPrser.urlencoded({ extended: true }))
+app.use(bodyPrser.json())
 
 //Routes
-const userRoutes = require("./src/routes/UserRoutes.js");
-const authRoutes = require("./src/routes/AuthRoutes.js");
+const userRoutes = require("./src/routes/UserRoutes.js")
+const authRoutes = require("./src/routes/AuthRoutes.js")
 
-app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes)
+app.use("/api/auth", authRoutes)
 
 app.listen(process.env.PORT, () => {
-  console.log("Server started on port " + port);
-});
+    console.log("Server started on port " + port)
+})

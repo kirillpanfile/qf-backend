@@ -1,17 +1,12 @@
-const jwtMiddleware = require("../middlewares/jwt.middleware.js");
-const UsersController = require("../controllers/UsersController.js");
-const SessionMiddleware = require("../middlewares/session.middleware.js");
-const { Router } = require("express");
+const router = require("express").Router()
+const { isAdmin } = require("../middlewares/auth.middleware.js")
+const { getAllUsers, getPages, getUser, deleteUser, getRoles } = require("../controllers/UsersController.js")
+const { verifySession } = require("../middlewares/session.middleware.js")
 
-const { verifySession } = SessionMiddleware;
-const router = new Router();
+router.get("/all", [verifySession, isAdmin], getAllUsers)
+router.get("/roles/all", [verifySession, isAdmin], getRoles)
+router.get("/pages", [verifySession, isAdmin], getPages)
+router.get("/:id", verifySession, getUser)
+router.delete("/:id", [verifySession, isAdmin], deleteUser)
 
-const { verifyAdmin, verifyToken } = jwtMiddleware;
-const { getAllUsers, getPages, getUser, deleteUser } = UsersController;
-
-router.get("/all", [verifySession], getAllUsers);
-router.get("/pages", verifyAdmin, getPages);
-router.get("/:id", verifyToken, getUser);
-router.delete("/:id", verifyAdmin, deleteUser);
-
-module.exports = router;
+module.exports = router

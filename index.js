@@ -44,8 +44,8 @@ app.use(
     store,
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: false,
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
     },
   })

@@ -56,24 +56,12 @@ class AuthService {
     return user._doc;
   }
 
-  async signInRemember({ username, password }) {
-    const user = await UserModel.findOne({ username });
-    if (!user)
-      throw new Error({
-        status: 401,
-        message: "User not found",
-      });
+  async logOut(sessionID) {
+    const mongoSession = await mongoose.connection.db
+      .collection("userSessions")
+      .deleteOne({ _id: sessionID });
 
-    const checkPassword = await bcrypt.compare(password, user.password);
-    if (!checkPassword)
-      throw new Error({
-        status: 401,
-        message: "Password is incorrect",
-      });
-
-    user.accessToken = jwt.sign({ user }, jwtSecret, { expiresIn: "1d" });
-
-    return user._doc;
+    return mongoSession;
   }
 }
 

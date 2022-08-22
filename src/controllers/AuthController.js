@@ -4,8 +4,7 @@ const mongoose = require("mongoose");
 class AuthController {
   async signUp(req, res) {
     try {
-      const user = await AuthService.signUp(req.body);
-      const { password, ...others } = user;
+      const { password, ...others } = await AuthService.signUp(req.body);
       return res.status(200).send(others);
     } catch (error) {
       error.status
@@ -15,20 +14,10 @@ class AuthController {
   }
   async signIn(req, res) {
     try {
-      const user = await AuthService.signIn(req.body);
-      const { password, ...others } = user;
-
-      req.session.user = {
-        userId: user._id,
-        userName: user.name,
-        userEmail: user.email,
-        userRole: user.roles,
-      };
-
-      console.log(req.session);
-      // const session = mongoose.connection.db.collection("userSession");
-      // console.log(await session.findOne({ _id: "" }));
-
+      const { password, ...others } = await AuthService.signIn(req.body);
+      const { _id, username, email, roles } = others;
+      const sessionUser = { _id, username, email, roles };
+      req.session.user = sessionUser;
       return res.status(200).send(others);
     } catch (error) {
       error.status
@@ -37,11 +26,13 @@ class AuthController {
     }
   }
 
-  async signInRemember(req, res) {
+  async logOut(req, res) {
     try {
-      const user = await AuthService.signInRemember(req.body);
-      const { password, ...others } = user;
-      return res.status(200).send(others);
+      req.session.destroy();
+      res.clearCookie("session");
+      res.status(200).json({
+        message: "Logout successfully",
+      });
     } catch (error) {
       error.status
         ? res.status(error.status).json({ message: error.message })

@@ -63,6 +63,16 @@ class AuthService {
 
     return mongoSession;
   }
+
+  async remember({ username }) {
+    const user = await UserModel.findOne({ username });
+    if (!user)
+      throw new Error({
+        status: 401,
+        message: "User not found",
+      });
+    return user._doc;
+  }
 }
 
 module.exports = new AuthService();

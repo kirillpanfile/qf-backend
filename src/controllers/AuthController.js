@@ -39,6 +39,17 @@ class AuthController {
         : res.status(400).json({ message: error.message });
     }
   }
+
+  async remember(req, res) {
+    try {
+      const { password, ...others } = await AuthService.remember(req.body);
+      return res.status(200).send(others);
+    } catch (error) {
+      error.status
+        ? res.status(error.status).json({ message: error.message })
+        : res.status(400).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new AuthController();

@@ -28,7 +28,7 @@ const mongoStore = new MongoDBStore(expressSession);
 const store = new mongoStore({
   uri: process.env.MONGO_URI,
   collection: "userSessions",
-  expires: 100000,
+  expires: 1000 * 60 * 60 * 24 * 7, //   1 week
 });
 // App initialization
 const app = express();
@@ -46,7 +46,7 @@ app.use(
       httpOnly: true,
       secure: false,
       sameSite: "Strict",
-      maxAge: 100000,
+      maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
     },
   })
 );

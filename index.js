@@ -33,23 +33,29 @@ const store = new mongoStore({
 // App initialization
 const app = express();
 
+let sess = {
+  name: "session",
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  store,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
+  },
+};
+
+app.use(expressSession(sess));
+
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+  sess.cookie.secure = true;
+}
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(
-  expressSession({
-    name: "session",
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, //   1 week
-    },
-  })
-);
+
 app.use(compression(compressOptions));
 app.use(bodyPrser.urlencoded({ extended: true }));
 app.use(bodyPrser.json());

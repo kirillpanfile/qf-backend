@@ -1,13 +1,27 @@
 const mongoose = require("mongoose")
-const langs = require("../configs/langs")
+const validation = require("../utils/langs.util")
+
+const titleSchema = new mongoose.Schema(
+    { lang: { type: String, required: true }, value: { type: String, required: true } },
+    { _id: false }
+)
+
+const descriptionSchema = new mongoose.Schema(
+    { lang: { type: String, required: true }, value: { type: String, required: true } },
+    { _id: false }
+)
+
+const stepSchema = new mongoose.Schema(
+    { lang: { type: String, required: true }, value: { type: [String], required: true } },
+    { _id: false }
+)
 
 const RecipeSchema = new mongoose.Schema(
     {
         author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        title: [{ lang: { type: String, required: true }, value: { type: String, required: true } }],
-        description: [{ lang: { type: String, required: true }, value: { type: String, required: true } }],
-        ingredients: { type: [String], required: true, ref: "Ingredient" },
-        steps: [{ lang: { type: String, required: true }, value: [{ type: String, required: true }] }],
+        title: [titleSchema],
+        description: [descriptionSchema],
+        steps: [stepSchema],
         image: { type: String, required: true },
         tags: { type: [String], ref: "Tag" },
         ingredients: { type: [mongoose.Schema.Types.ObjectId], required: true, ref: "Ingredient" },
@@ -19,19 +33,12 @@ const RecipeSchema = new mongoose.Schema(
     }
 )
 
-module.exports = mongoose.model("Recipe", RecipeSchema)
-
 //validate the language field
+validation.lang(["title", "description", "steps"], RecipeSchema)
 
-const paths = ["title", "description", "steps"]
+//validate the empty fields
+validation.empty(["title", "description", "ingredients", "steps", "image", "tags", "categories"], RecipeSchema)
 
-const langValidation = (item) => {
-    if (item.length == 0) return false
-    return item.every((e) => langs.includes(e.lang))
-}
+//validate ingredients
 
-paths.forEach((path) => {
-    RecipeSchema.path(path).validate(function (lang) {
-        return langValidation(lang)
-    }, `${path} must be one of ${langs}`)
-})
+module.exports = mongoose.model("Recipe", RecipeSchema)

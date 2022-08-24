@@ -1,13 +1,15 @@
 const mongoose = require("mongoose")
-const langs = require("../configs/langs")
-// multi language support
+
+const ingredientSchema = new mongoose.Schema(
+    {
+        lang: { type: String, required: true },
+        value: { type: String, required: true },
+    },
+    { _id: false }
+)
+
 const IngredientSchema = new mongoose.Schema({
-    name: [{ lang: { type: String, required: true }, value: { type: String, required: true } }],
+    ingredient: [ingredientSchema],
 })
 
 module.exports = mongoose.model("Ingredient", IngredientSchema)
-
-//validation for the language field
-// IngredientSchema.path("name").validate(function (lang) {
-//     return langs.includes(lang)
-// }, "Invalid language")

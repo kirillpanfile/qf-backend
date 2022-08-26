@@ -26,6 +26,7 @@ const RecipeSchema = new mongoose.Schema(
         tags: { type: [String], ref: "Tag" },
         ingredients: { type: [mongoose.Schema.Types.ObjectId], required: true, ref: "Ingredient" },
         categories: { type: [String], ref: "Category", required: true },
+        approved: { type: String, required: true, default: "pending", enum: ["pending", "approved", "rejected"] },
         time: { type: Number, required: true },
     },
     {

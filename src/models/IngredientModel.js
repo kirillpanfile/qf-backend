@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
-
-const ingredientSchema = new mongoose.Schema(
+const validation = require("../utils/langs.util")
+const ingredient = new mongoose.Schema(
     {
         lang: { type: String, required: true },
         value: { type: String, required: true },
@@ -9,7 +9,10 @@ const ingredientSchema = new mongoose.Schema(
 )
 
 const IngredientSchema = new mongoose.Schema({
-    ingredient: [ingredientSchema],
+    ingredient: [ingredient],
 })
 
 module.exports = mongoose.model("Ingredient", IngredientSchema)
+
+validation.lang(["ingredient"], IngredientSchema)
+validation.empty(["ingredient"], IngredientSchema)

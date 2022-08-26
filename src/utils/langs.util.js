@@ -9,11 +9,10 @@ class validation {
     }
 
     lang(paths, schema) {
-        //using self is easier than binding this
-        // we would need to bind this 2 times
         const self = this
         paths.forEach(function (path) {
             schema.path(path).validate(function (lang) {
+                console.log(path)
                 return self.validator(lang)
             }, `${path} must be one of ${self.langs}`)
         })
@@ -22,7 +21,6 @@ class validation {
     empty(paths, schema) {
         paths.forEach(function (path) {
             schema.path(path).validate(function (value) {
-                console.log("value", value)
                 return value.length > 0
             }, `${path} must not be empty`)
         })

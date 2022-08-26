@@ -1,5 +1,5 @@
 const RecipeService = require("../services/RecipeService")
-
+const translate = require("../utils/translate.util")
 class RecipeController {
     async getRecipe(req, res) {
         try {
@@ -14,7 +14,8 @@ class RecipeController {
     }
     async getRecipes(req, res) {
         try {
-            const recipes = await RecipeService.getRecipes()
+            const lang = req.params.lang
+            const recipes = await RecipeService.getRecipes(lang)
             return res.status(200).json(recipes)
         } catch (error) {
             error.status
@@ -55,7 +56,7 @@ class RecipeController {
 
     async createIngredient(req, res) {
         try {
-            const ingredient = await RecipeService.createIngredient(req.body)
+            const ingredient = await RecipeService.createIngredient(req.body, req.params.flag)
             return res.status(200).json(ingredient)
         } catch (error) {
             error.status

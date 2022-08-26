@@ -9,11 +9,10 @@ const {
     createIngredient,
 } = require("../controllers/RecipeController.js")
 
+router.post("/more/create/:flag", createIngredient)
 router.post("/create", createRecipe)
-router.get("/", getRecipes)
+router.get("/all/:lang", getRecipes)
 router.get("/:id", getRecipe)
 router.put("/:id", updateRecipe)
-
-router.post("/ingredient/create", createIngredient)
 
 module.exports = router

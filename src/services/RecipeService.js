@@ -39,27 +39,20 @@ class RecipeService {
 
     async createRecipe(recipe) {
         const connection = getConnection()
-
         const { author, ingredients, tags, categories } = recipe
 
         const user = await connection.model("User", UserModel.schema).findById(author)
-
         const checkIngredients = await connection
             .model("Ingredient", IngredientModel.schema)
             .find({ _id: { $in: ingredients } })
-
         const checkTags = await connection.model("Tag", TagModel.schema).find({ _id: { $in: tags } })
-
         const checkCategories = await connection
             .model("Category", CategoryModel.schema)
             .find({ _id: { $in: categories } })
 
         if (checkIngredients.length != ingredients.length) throw new Error("Ingredients not found")
-
         if (checkTags.length != tags.length) throw new Error("Tags not found")
-
         if (checkCategories.length != categories.length) throw new Error("Categories not found")
-
         if (!user) throw new Error("User not found")
 
         const newRecipe = await connection.model("Recipe", RecipeModel.schema)
@@ -68,76 +61,48 @@ class RecipeService {
     }
 
     async createIngredient(body, flag) {
+        //log app.locales
         const validFlags = ["ingredient", "tag", "category"]
         if (!validFlags.includes(flag)) throw new Error("Invalid flag")
-        const connection = getConnection()
+
         if (flag == "ingredient") {
             const { value, lang } = body.ingredient[0]
 
             if (!value) throw new Error("Ingredient value is required")
             if (!lang) throw new Error("Language is required")
             const langsToTranslate = langs.filter((e) => e != lang)
+            const ingredient = [{ value, lang }]
 
-            const createdIngredient = await Promise.all(
+            const connection = getConnection()
+
+            const savedIngredient = await Promise.all(
                 langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value }))
             )
                 .then((translated) => {
-                    let ingredient = [{ value, lang }]
                     translated.forEach((e) => {
                         ingredient.push(e)
                     })
-                    return ingredient
+                })
+                .then(async () => {
+                    const newIngredient = connection.model("Ingredient", IngredientModel.schema)
+                    const savedIngredient = await newIngredient.create({
+                        ingredient: ingredient,
+                    })
+                    return savedIngredient
                 })
                 .catch((error) => {
                     throw new Error(error)
                 })
 
-            const newIngredient = await connection.model("Ingredient", IngredientModel.schema).create(createdIngredient)
-            return newIngredient
+            return savedIngredient
         } else if (flag == "tag") {
-            const { value, lang } = body.tag[0]
-
-            if (!value) throw new Error("Tag value is required")
-            if (!lang) throw new Error("Language is required")
-            const langsToTranslate = langs.filter((e) => e != lang)
-
-            const createdTag = await Promise.all(
-                langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value }))
-            )
-                .then((translated) => {
-                    let tag = [{ value, lang }]
-                    translated.forEach((e) => {
-                        tag.push(e)
-                    })
-                    return tag
-                })
-                .catch((error) => {
-                    throw new Error(error)
-                })
-            const newTag = await connection.model("Tag", TagModel.schema).create(createdTag)
-            return newTag
+            const newTag = new TagModel(body)
+            const savedTag = await newTag.save()
+            return savedTag
         } else if (flag == "category") {
-            const { value, lang } = body.category[0]
-
-            if (!value) throw new Error("Category value is required")
-            if (!lang) throw new Error("Language is required")
-            const langsToTranslate = langs.filter((e) => e != lang)
-
-            const createdCategory = await Promise.all(
-                langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value }))
-            )
-                .then((translated) => {
-                    let category = [{ value, lang }]
-                    translated.forEach((e) => {
-                        category.push(e)
-                    })
-                    return category
-                })
-                .catch((error) => {
-                    throw new Error(error)
-                })
-            const newCategory = await connection.model("Category", CategoryModel.schema).create(createdCategory)
-            return newCategory
+            const newCategory = new CategoryModel(body)
+            const savedCategory = await newCategory.save()
+            return savedCategory
         } else {
             throw new Error("Something went wrong")
         }

@@ -3,6 +3,7 @@ const RoleModel = require("../models/RoleModel.js")
 const bcrypt = require("bcrypt")
 const { jwtSecret } = require("../configs/config.js")
 const jwt = require("jsonwebtoken")
+const { getConnection } = require("../utils/mongoose.util")
 
 const saltRounds = 10
 
@@ -14,30 +15,31 @@ class AuthService {
                 message: "Missing username, email or password",
             })
         }
-
-        const checkUser = await UserModel.findOne({ username })
+        const connection = getConnection()
+        // const checkUser = await UserModel.findOne({ username })
+        const checkUser = await connection.model("User").findOne({ username })
         if (checkUser) throw new Error("User already exist")
-        const checkEmail = await UserModel.findOne({ email })
+        const checkEmail = await connection.model("User").findOne({ email })
         if (checkEmail) throw new Error("Email already exist")
 
         const salt = await bcrypt.genSalt(saltRounds)
         const hash = await bcrypt.hash(password, salt)
 
-        const roles = await RoleModel.findOne({ name: "ROLE_USER" })
+        const roles = await connection.model("Role", RoleModel.schema).findOne({ name: "ROLE_USER" })
 
-        const newUser = new UserModel({
+        const newUser = await connection.model("User", UserModel.schema).create({
             username,
             email,
             password: hash,
             roles: [roles._id],
         })
-
-        const createdUser = await newUser.save()
-        return createdUser
+        return newUser
     }
 
     async signIn({ username, password }) {
-        const user = await UserModel.findOne({ username })
+        const connection = getConnection()
+        // const user = await UserModel.findOne({ username })
+        const user = await connection.model("User", UserModel.schema).findOne({ username })
         if (!user)
             throw new Error({
                 status: 401,
@@ -57,13 +59,15 @@ class AuthService {
     }
 
     async logOut(sessionID) {
-        const mongoSession = await mongoose.connection.db.collection("userSessions").deleteOne({ _id: sessionID })
+        const connection = getConnection()
+        const mongoSession = await connection.model("UserSession").deleteOne({ _id: sessionID })
 
         return mongoSession
     }
 
     async remember({ username }) {
-        const user = await UserModel.findOne({ username })
+        const connection = getConnection()
+        const user = await connection.model("User", UserModel.schema).findOne({ username })
         if (!user)
             throw new Error({
                 status: 401,

@@ -1,5 +1,4 @@
 const RecipeService = require("../services/RecipeService")
-const translate = require("../utils/translate.util")
 class RecipeController {
     async getRecipe(req, res) {
         try {

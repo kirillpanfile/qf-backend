@@ -17,7 +17,7 @@ dotenv.config()
 
 // Import utils and configs
 const { corsOptions, compressOptions } = require("./src/configs/config.js")
-const connect = require("./src/utils/mongoose.util.js")
+const { connect, getConnection } = require("./src/utils/mongoose.util.js")
 
 // Connect to the database
 const port = process.env.PORT || 3000
@@ -32,6 +32,8 @@ const store = new mongoStore({
 })
 // App initialization
 const app = express()
+
+app.locals.connection = getConnection
 
 let sess = {
     name: "session",

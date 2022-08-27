@@ -11,8 +11,6 @@ module.exports = async ({ from, to, value }) => {
     const response = await fetch(
         `https://api.mymemory.translated.net/get?q=${value}&langpair=${from}|${to}&key=${process.env.MY_MEMORY_API_KEY}`
     )
-
-    console.log(response)
     const data = await response.json()
     return {
         lang: to,

@@ -1,8 +1,12 @@
 const UserModel = require("../models/UserModel.js")
 const RoleModel = require("../models/RoleModel.js")
+const { getConnection } = require("../utils/mongoose.util")
 class UsersService {
     async getAllUsers(query) {
-        const users = await UserModel.find({})
+        const connection = getConnection()
+        const users = await connection
+            .model("User", UserModel.schema)
+            .find({})
             .skip(query.skip)
             .limit(query.limit)
             .sort(query.sort)
@@ -12,23 +16,27 @@ class UsersService {
     }
 
     async getPages(query) {
-        const pages = await UserModel.countDocuments()
+        const connection = getConnection()
+        const pages = await connection.model("User", UserModel.schema).countDocuments()
         return Math.ceil(pages / query.limit)
     }
 
     async getUser(id, query) {
-        const user = await UserModel.findById(id).populate(query.populate)
+        const connection = getConnection()
+        const user = await connection.model("User", UserModel.schema).findById(id).populate(query.populate)
         const { password, ...others } = user._doc
         return others
     }
 
     async deleteUser(id) {
-        const user = await UserModel.findByIdAndDelete(id)
+        const connection = getConnection()
+        const user = await connection.model("User", UserModel.schema).findByIdAndDelete(id)
         return user
     }
 
     async getRoles() {
-        const roles = await RoleModel.find({})
+        const connection = getConnection()
+        const roles = await connection.model("Role", RoleModel.schema).find({})
         return roles
     }
 }

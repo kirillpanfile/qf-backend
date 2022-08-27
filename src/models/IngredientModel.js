@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const validation = require("../utils/langs.util")
+
 const ingredient = new mongoose.Schema(
     {
         lang: { type: String, required: true },

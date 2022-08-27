@@ -63,21 +63,26 @@ class RecipeService {
             const langsToTranslate = langs.filter((e) => e != lang)
             const ingredient = [{ value, lang }]
 
-            Promise.all(langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value })))
+            const savedIngredient = await Promise.all(
+                langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value }))
+            )
                 .then((translated) => {
                     translated.forEach((e) => {
                         ingredient.push(e)
                     })
                 })
+                .then(async () => {
+                    const newIngredient = new IngredientModel({
+                        ingredient: ingredient,
+                    })
+                    const savedIngredient = await newIngredient.save()
+                    console.log(savedIngredient)
+                    return savedIngredient
+                })
                 .catch((error) => {
                     throw new Error(error)
                 })
 
-            const newIngredient = new IngredientModel({
-                ingredient: ingredient,
-            })
-
-            const savedIngredient = await newIngredient.save()
             return savedIngredient
         } else if (flag == "tag") {
             const newTag = new TagModel(body)

@@ -60,17 +60,21 @@ class RecipeService {
 
             if (!value) throw new Error("Ingredient value is required")
             if (!lang) throw new Error("Language is required")
+            const langsToTranslate = langs.filter((e) => e != lang)
+            const ingredient = [{ value, lang }]
 
-            const en = await translate({ value, lang: "en" })
-            const ro = await translate({ value, lang: "ro" })
-            const ru = await translate({ value, lang: "ru" })
+            Promise.all(langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value })))
+                .then((translated) => {
+                    translated.forEach((e) => {
+                        ingredient.push(e)
+                    })
+                })
+                .catch((error) => {
+                    throw new Error(error)
+                })
 
             const newIngredient = new IngredientModel({
-                ingredient: [
-                    { lang: "en", value: en },
-                    { lang: "ro", value: ro },
-                    { lang: "ru", value: ru },
-                ],
+                ingredient: ingredient,
             })
 
             const savedIngredient = await newIngredient.save()

@@ -68,10 +68,12 @@ app.use(bodyPrser.json())
 const userRoutes = require("./src/routes/UserRoutes.js")
 const authRoutes = require("./src/routes/AuthRoutes.js")
 const recipeRoutes = require("./src/routes/RecipeRoutes.js")
+const taskRoutes = require("./src/routes/TaskRoutes.js")
 
 app.use("/api/users", userRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/recipes", recipeRoutes)
+app.use("/api/tasks", taskRoutes)
 
 app.listen(process.env.PORT, () => {
     console.log("Server started on port " + port)

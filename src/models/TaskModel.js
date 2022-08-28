@@ -12,13 +12,11 @@ const TaslSchema = new mongoose.Schema(
         },
         flag: {
             type: String,
-            required: true,
             enum: ["Low", "Normal", "High", "Urgent"],
             default: "Low",
         },
         status: {
             type: String,
-            required: true,
             enum: ["Open", "In Progress", "In Review", "Closed"],
             default: "Open",
         },

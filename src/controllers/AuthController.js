@@ -1,5 +1,4 @@
 const AuthService = require("../services/AuthService.js")
-const mongoose = require("mongoose")
 
 class AuthController {
     async signUp(req, res) {
@@ -16,8 +15,11 @@ class AuthController {
         try {
             const { password, ...others } = await AuthService.signIn(req.body)
             const { _id, username, email, roles } = others
-            const sessionUser = { _id, username, email, roles }
-            req.session.user = sessionUser
+
+            if (!req.session.user) {
+                const sessionUser = { _id, username, email, roles }
+                req.session.user = sessionUser
+            }
             return res.status(200).send(others)
         } catch (error) {
             error.status

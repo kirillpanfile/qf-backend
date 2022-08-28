@@ -4,7 +4,10 @@ const queryUtil = require("../utils/query.util.js")
 class UsersController {
     async getAllUsers(req, res) {
         try {
-            const users = await UsersService.getAllUsers(queryUtil(req.query))
+            const type = req.params.type
+            console.log(type)
+            const users = await UsersService.getAllUsers(queryUtil(req.query), type)
+
             for (let i = 0; i < users.length; i++) {
                 const { _id, username, picture, email, roles } = users[i]
                 users[i] = { _id, username, picture, email, roles }

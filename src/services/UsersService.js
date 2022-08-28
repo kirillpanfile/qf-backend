@@ -2,11 +2,26 @@ const UserModel = require("../models/UserModel.js")
 const RoleModel = require("../models/RoleModel.js")
 const { getConnection } = require("../utils/mongoose.util")
 class UsersService {
-    async getAllUsers(query) {
+    async getAllUsers(query, type) {
         const connection = getConnection()
+
+        const roles = await connection.model("Role", RoleModel.schema).find({})
+        const validRoles = roles.map((role) => {
+            return {
+                _id: role._id,
+                role: role._doc.name.replace("ROLE_", "").replace("_", "").toLowerCase(),
+            }
+        })
+
+        if (!validRoles.some((role) => role.role === type)) {
+            throw new Error("Invalid type")
+        }
+
+        const role = validRoles.find((role) => role.role === type)
+
         const users = await connection
             .model("User", UserModel.schema)
-            .find({})
+            .find({ roles: role._id })
             .skip(query.skip)
             .limit(query.limit)
             .sort(query.sort)

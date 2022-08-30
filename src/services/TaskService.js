@@ -4,14 +4,17 @@ const TaskModel = require("../models/TaskModel")
 class TaskService {
     async createTask(task) {
         const connection = getConnection()
-        console.log(task)
         const newTask = await connection.model("Task", TaskModel.schema).create(task)
-        return newTask
+
+        return newTask.populate("user", ["username", "_id", "picture"])
     }
 
-    async getTasks(query) {
+    async getTasks() {
         const connection = getConnection()
-        const tasks = await connection.model("Task", TaskModel.schema).find({}).populate("ingredients")
+        const tasks = await connection
+            .model("Task", TaskModel.schema)
+            .find({})
+            .populate("user", ["username", "_id", "picture"])
         return tasks
     }
 

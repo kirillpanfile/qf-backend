@@ -61,10 +61,32 @@ class AuthMiddleware {
             if (!user) return res.status(400).json({ message: "User not found" })
 
             const { roles } = user
-
             if (!roles.length) return res.status(400).json({ message: "User has no roles" })
 
-            if (flag.name == "all") return next()
+            if (!roles.find((role) => role.name == flag.name))
+                return res.status(401).json({ message: "You are not authorized" })
+
+            next()
+        } catch (error) {
+            return error.status
+                ? res.status(error.status).json({ message: error.message })
+                : res.status(400).json({ message: error.message })
+        }
+    }
+
+    async rememberPermission(req, res, next) {
+        try {
+            const { username } = req.session.user
+
+            const flag = await flagValidation(req.params.flag)
+            if (!flag) return res.status(400).send("Invalid flag")
+
+            const user = await UserModel.findOne({ username }).populate("roles")
+            if (!user) return res.status(400).json({ message: "User not found" })
+
+            const { roles } = user
+
+            if (!roles.length) return res.status(400).json({ message: "User has no roles" })
 
             if (!roles.find((role) => role.name === flag.name))
                 return res.status(401).json({ message: "You are not authorized" })

@@ -16,10 +16,8 @@ class AuthController {
             const { password, ...others } = await AuthService.signIn(req.body)
             const { _id, username, email, roles } = others
 
-            if (!req.session.user) {
-                const sessionUser = { _id, username, email, roles }
-                req.session.user = sessionUser
-            }
+            req.session.user = { _id, username, email, roles }
+
             return res.status(200).send(others)
         } catch (error) {
             error.status
@@ -44,7 +42,8 @@ class AuthController {
 
     async remember(req, res) {
         try {
-            const { password, ...others } = await AuthService.remember(req.body)
+            const { password, ...others } = await AuthService.remember(req.session.user)
+
             return res.status(200).send(others)
         } catch (error) {
             error.status

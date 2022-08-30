@@ -3,7 +3,6 @@ const TaskService = require("../services/TaskService")
 class TaskController {
     async createTask(req, res) {
         try {
-            console.log(req.body)
             const task = await TaskService.createTask(req.body)
             res.status(200).json(task)
         } catch (err) {

@@ -1,8 +1,6 @@
 const UserModel = require("../models/UserModel.js")
 const RoleModel = require("../models/RoleModel.js")
 const bcrypt = require("bcrypt")
-const { jwtSecret } = require("../configs/config.js")
-const jwt = require("jsonwebtoken")
 const { getConnection } = require("../utils/mongoose.util")
 
 const saltRounds = 10
@@ -26,7 +24,6 @@ class AuthService {
         const hash = await bcrypt.hash(password, salt)
 
         const roles = await connection.model("Role", RoleModel.schema).findOne({ name: "ROLE_USER" })
-
         const newUser = await connection.model("User", UserModel.schema).create({
             username,
             email,
@@ -38,7 +35,6 @@ class AuthService {
 
     async signIn({ username, password }) {
         const connection = getConnection()
-        // const user = await UserModel.findOne({ username })
         const user = await connection.model("User", UserModel.schema).findOne({ username })
         if (!user)
             throw new Error({
@@ -52,16 +48,12 @@ class AuthService {
                 status: 401,
                 message: "Password is incorrect",
             })
-
-        user._doc.accessToken = jwt.sign({ user }, jwtSecret)
-
         return user._doc
     }
 
     async logOut(sessionID) {
         const connection = getConnection()
-        const mongoSession = await connection.model("UserSession").deleteOne({ _id: sessionID })
-
+        const mongoSession = await connection.model("UserSessions").deleteOne({ _id: sessionID })
         return mongoSession
     }
 

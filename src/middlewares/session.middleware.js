@@ -4,8 +4,17 @@ class SessionMiddleware {
     async verifySession(req, res, next) {
         const session = req.session
 
-        if (!session.user) return res.status(401).json({ status: 401, message: "Session Expired" })
-        next()
+        if (!session.user) {
+            res.clearCookie("session")
+            //destroy session
+            req.session.destroy((err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+
+            return res.status(401).json({ status: 401, message: "Session Expired" })
+        } else next()
     }
 }
 

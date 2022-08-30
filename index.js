@@ -39,7 +39,7 @@ let sess = {
     name: "session",
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store,
     cookie: {
         httpOnly: true,

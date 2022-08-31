@@ -54,6 +54,21 @@ class UsersService {
         const roles = await connection.model("Role", RoleModel.schema).find({})
         return roles
     }
+
+    async updateUser(id, body) {
+        const connection = getConnection()
+
+        // const { username, email, roles } = await connection
+        //     .model("User", UserModel.schema)
+        //     .findById(id)
+        //     .populate("roles")
+
+        const user = await connection.model("User", UserModel.schema).findByIdAndUpdate(id, body).populate("roles")
+        // console.log(username, email, roles)
+
+        // console.log(body)
+        return user
+    }
 }
 
 module.exports = new UsersService()

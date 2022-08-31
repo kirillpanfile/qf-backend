@@ -6,7 +6,7 @@ class SessionMiddleware {
 
         if (!session.user) {
             res.clearCookie("session")
-            //destroy session
+
             req.session.destroy((err) => {
                 if (err) {
                     console.log(err)

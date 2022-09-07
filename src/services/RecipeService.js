@@ -7,6 +7,8 @@ const { langs } = require("../utils/langs.util")
 const translate = require("../utils/translate.util")
 const { getConnection } = require("../utils/mongoose.util")
 
+const langsToTranslate = (lang) => langs.filter((e) => e != lang)
+
 //get recipe by current language selected
 const getLang = (recipe, lang) => {
     try {
@@ -39,44 +41,115 @@ class RecipeService {
 
     async createRecipe(recipe) {
         const connection = getConnection()
-        const { author, ingredients, tags, categories } = recipe
+
+        let { author, title, description, steps, ingredients, tags, categories, ...other } = recipe
+
+        switch (true) {
+            case !author:
+                throw new Error("Author is required")
+            case !title:
+                throw new Error("Title is required")
+            case !description:
+                throw new Error("Description is required")
+            case !steps:
+                throw new Error("Steps is required")
+            case !ingredients:
+                throw new Error("Ingredients is required")
+            case !tags:
+                throw new Error("Tags is required")
+            case !categories:
+                throw new Error("Categories is required")
+        }
+
+        const translatedTitle = await Promise.all(
+            langsToTranslate(title[0].lang).map(async (e) => {
+                return await translate({ from: title[0].lang, to: e, value: title[0].value })
+            })
+        )
+
+        const translatedDescription = await Promise.all(
+            langsToTranslate(description[0].lang).map(async (e) => {
+                return await translate({ from: description[0].lang, to: e, value: description[0].value })
+            })
+        )
+
+        await Promise.all(
+            langsToTranslate(steps[0].lang).map(async (e) => {
+                let step = { lang: e, value: [] }
+                for (let i of steps[0].value) {
+                    const translatedStep = await translate({ from: steps[0].lang, to: e, value: i })
+                    step.value.push(translatedStep.value)
+                }
+                steps.push(step)
+            })
+        )
 
         const user = await connection.model("User", UserModel.schema).findById(author)
-        const checkIngredients = await connection
-            .model("Ingredient", IngredientModel.schema)
-            .find({ _id: { $in: ingredients } })
-        const checkTags = await connection.model("Tag", TagModel.schema).find({ _id: { $in: tags } })
-        const checkCategories = await connection
-            .model("Category", CategoryModel.schema)
-            .find({ _id: { $in: categories } })
 
-        if (checkIngredients.length != ingredients.length) throw new Error("Ingredients not found")
-        if (checkTags.length != tags.length) throw new Error("Tags not found")
-        if (checkCategories.length != categories.length) throw new Error("Categories not found")
-        if (!user) throw new Error("User not found")
+        const checkIngredients = await connection.model("Ingredient", IngredientModel.schema).find({
+            _id: {
+                $in: ingredients,
+            },
+        })
+        const checkTags = await connection.model("Tag", TagModel.schema).find({
+            _id: {
+                $in: tags,
+            },
+        })
+        const checkCategories = await connection.model("Category", CategoryModel.schema).find({
+            _id: {
+                $in: categories,
+            },
+        })
 
-        const newRecipe = await connection.model("Recipe", RecipeModel.schema)
-        const savedRecipe = await newRecipe.create(recipe)
+        switch (true) {
+            case checkIngredients.length != ingredients.length:
+                throw new Error("Ingredients not found")
+            case checkTags.length != tags.length:
+                throw new Error("Tags not found")
+            case checkCategories.length != categories.length:
+                throw new Error("Categories not found")
+            case !user:
+                throw new Error("User not found")
+        }
+
+        const createdRecipe = {
+            title: [...title, ...translatedTitle],
+            description: [...description, ...translatedDescription],
+            steps,
+            ingredients,
+            tags,
+            categories,
+            author,
+            ...other,
+        }
+
+        const newRecipe = new connection.model("Recipe", RecipeModel.schema)
+        const savedRecipe = await newRecipe.create(createdRecipe)
+
+        await savedRecipe.save()
         return savedRecipe
     }
 
     async createIngredient(body, flag) {
-        //log app.locales
         const validFlags = ["ingredient", "tag", "category"]
         if (!validFlags.includes(flag)) throw new Error("Invalid flag")
 
+        const connection = getConnection()
         if (flag == "ingredient") {
             const { value, lang } = body.ingredient[0]
 
-            if (!value) throw new Error("Ingredient value is required")
-            if (!lang) throw new Error("Language is required")
-            const langsToTranslate = langs.filter((e) => e != lang)
+            switch (true) {
+                case !value:
+                    throw new Error("Ingredient value is required")
+                case !lang:
+                    throw new Error("Language is required")
+            }
+
             const ingredient = [{ value, lang }]
 
-            const connection = getConnection()
-
             const savedIngredient = await Promise.all(
-                langsToTranslate.map(async (e) => await translate({ from: lang, to: e, value }))
+                langsToTranslate(lang).map(async (e) => await translate({ from: lang, to: e, value }))
             )
                 .then((translated) => {
                     translated.forEach((e) => {
@@ -85,9 +158,7 @@ class RecipeService {
                 })
                 .then(async () => {
                     const newIngredient = connection.model("Ingredient", IngredientModel.schema)
-                    const savedIngredient = await newIngredient.create({
-                        ingredient: ingredient,
-                    })
+                    const savedIngredient = await newIngredient.create({ ingredient: ingredient })
                     return savedIngredient
                 })
                 .catch((error) => {

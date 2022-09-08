@@ -16,7 +16,7 @@ const TaslSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Open", "In Progress", "In Review", "Closed"],
+        enum: ["To Do", "In Progress", "In Review", "Done"],
         default: "Open",
     },
     user: {

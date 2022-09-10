@@ -15,9 +15,9 @@ class AuthService {
         }
         const connection = getConnection()
         // const checkUser = await UserModel.findOne({ username })
-        const checkUser = await connection.model("User").findOne({ username })
+        const checkUser = await connection.model("User", UserModel.schema).findOne({ username })
         if (checkUser) throw new Error("User already exist")
-        const checkEmail = await connection.model("User").findOne({ email })
+        const checkEmail = await connection.model("User", UserModel.schema).findOne({ email })
         if (checkEmail) throw new Error("Email already exist")
 
         const salt = await bcrypt.genSalt(saltRounds)

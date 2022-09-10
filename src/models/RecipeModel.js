@@ -16,6 +16,15 @@ const stepSchema = new mongoose.Schema(
     { _id: false }
 )
 
+const ingredientSchema = new mongoose.Schema(
+    {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: "Ingredient", required: true },
+        quantity: { type: Number, required: true },
+        unit: { type: mongoose.Schema.Types.ObjectId, ref: "Unit", required: true },
+    },
+    { _id: false }
+)
+
 const RecipeSchema = new mongoose.Schema(
     {
         author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -24,7 +33,7 @@ const RecipeSchema = new mongoose.Schema(
         steps: [stepSchema],
         image: { type: String, required: true },
         tags: { type: [String], ref: "Tag" },
-        ingredients: { type: [mongoose.Schema.Types.ObjectId], required: true, ref: "Ingredient" },
+        ingredients: [ingredientSchema],
         categories: { type: [String], ref: "Category", required: true },
         approved: { type: String, required: true, default: "pending", enum: ["pending", "approved", "rejected"] },
         time: { type: Number, required: true },

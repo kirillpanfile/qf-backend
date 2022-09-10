@@ -2,6 +2,7 @@ const RecipeModel = require("../models/RecipeModel")
 const UserModel = require("../models/UserModel")
 const TagModel = require("../models/TagModel")
 const CategoryModel = require("../models/CategoryModel")
+const UnitModel = require("../models/UnitModel")
 const IngredientModel = require("../models/IngredientModel")
 const { langs } = require("../utils/langs.util")
 const translate = require("../utils/translate.util")
@@ -131,53 +132,60 @@ class RecipeService {
         return savedRecipe
     }
 
-    async createIngredient(body, flag) {
-        const validFlags = ["ingredient", "tag", "category"]
-        if (!validFlags.includes(flag)) throw new Error("Invalid flag")
+    async createMore(body, flag) {
+        if (!["ingredient", "tag", "category", "unit"].includes(flag)) throw new Error("Invalid flag")
 
-        const connection = getConnection()
         if (flag == "ingredient") {
-            const { value, lang } = body.ingredient[0]
-
-            switch (true) {
-                case !value:
-                    throw new Error("Ingredient value is required")
-                case !lang:
-                    throw new Error("Language is required")
-            }
-
-            const ingredient = [{ value, lang }]
-
-            const savedIngredient = await Promise.all(
-                langsToTranslate(lang).map(async (e) => await translate({ from: lang, to: e, value }))
-            )
-                .then((translated) => {
-                    translated.forEach((e) => {
-                        ingredient.push(e)
-                    })
-                })
-                .then(async () => {
-                    const newIngredient = connection.model("Ingredient", IngredientModel.schema)
-                    const savedIngredient = await newIngredient.create({ ingredient: ingredient })
-                    return savedIngredient
-                })
-                .catch((error) => {
-                    throw new Error(error)
-                })
-
-            return savedIngredient
-        } else if (flag == "tag") {
-            const newTag = new TagModel(body)
-            const savedTag = await newTag.save()
-            return savedTag
-        } else if (flag == "category") {
-            const newCategory = new CategoryModel(body)
-            const savedCategory = await newCategory.save()
-            return savedCategory
-        } else {
-            throw new Error("Something went wrong")
+            const translatedIngredient = await genTranslate(body, "ingredient", IngredientModel.schema)
+            return translatedIngredient
         }
+        if (flag == "tag") {
+            const translatedTag = await genTranslate(body, "tag", TagModel.schema)
+            return translatedTag
+        }
+        if (flag == "category") {
+            const translatedCategory = await genTranslate(body, "category", CategoryModel.schema)
+            return translatedCategory
+        }
+        if (flag == "unit") {
+            const translatedUnit = await genTranslate(body, "unit", UnitModel.schema)
+            return translatedUnit
+        }
+        throw new Error("Something went wrong")
     }
+}
+
+async function genTranslate(body, flag, schema) {
+    const connection = getConnection()
+    const { value, lang } = body[flag][0]
+
+    switch (true) {
+        case !value:
+            throw new Error("Value is required")
+        case !lang:
+            throw new Error("Language is required")
+    }
+
+    const data = [{ value, lang }]
+    const translated = await Promise.all(
+        langsToTranslate(lang).map(async (e) => await translate({ from: lang, to: e, value }))
+    )
+        .then((translated) => {
+            translated.forEach((e) => {
+                data.push(e)
+            })
+        })
+        .then(async () => {
+            let model = flag.charAt(0).toUpperCase() + flag.slice(1)
+            const newModel = connection.model(model, schema)
+            const savedModel = await newModel.create({ [flag]: data })
+            return savedModel
+        })
+        .catch((error) => {
+            throw new Error(error)
+        })
+
+    return translated
 }
 
 module.exports = new RecipeService()

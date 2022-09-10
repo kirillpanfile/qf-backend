@@ -53,9 +53,9 @@ class RecipeController {
         }
     }
 
-    async createIngredient(req, res) {
+    async createMore(req, res) {
         try {
-            const ingredient = await RecipeService.createIngredient(req.body, req.params.flag)
+            const ingredient = await RecipeService.createMore(req.body, req.params.flag)
             return res.status(200).json(ingredient)
         } catch (error) {
             error.status

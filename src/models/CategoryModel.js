@@ -3,10 +3,18 @@ const validation = require("../utils/langs.util")
 
 const category = new mongoose.Schema(
     {
-        lang: { type: String, required: true },
-        value: { type: String, required: true },
+        lang: {
+            type: String,
+            required: true,
+        },
+        value: {
+            type: String,
+            required: true,
+        },
     },
-    { _id: false }
+    {
+        _id: false,
+    }
 )
 
 const CategoryScgema = new mongoose.Schema({

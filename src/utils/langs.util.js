@@ -12,7 +12,6 @@ class validation {
         const self = this
         paths.forEach(function (path) {
             schema.path(path).validate(function (lang) {
-                console.log(path)
                 return self.validator(lang)
             }, `${path} must be one of ${self.langs}`)
         })

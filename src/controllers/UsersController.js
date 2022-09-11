@@ -5,7 +5,6 @@ class UsersController {
     async getAllUsers(req, res) {
         try {
             const type = req.params.type
-            console.log(type)
             const users = await UsersService.getAllUsers(queryUtil(req.query), type)
 
             for (let i = 0; i < users.length; i++) {

@@ -27,8 +27,3 @@ module.exports = async ({ from, to, value }) => {
         value: data.responseData.translatedText,
     }
 }
-
-// fetch(url, options)  `https://api.mymemory.translated.net/get?q=${value}&langpair=${from}|${to}&key=${process.env.MY_MEMORY_API_KEY}`
-//     .then((res) => res.json())
-//     .then((json) => console.log(json))
-//     .catch((err) => console.error("error:" + err))

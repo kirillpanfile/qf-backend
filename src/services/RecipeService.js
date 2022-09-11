@@ -6,7 +6,6 @@ const UnitModel = require("../models/UnitModel")
 const IngredientModel = require("../models/IngredientModel")
 const { langs } = require("../utils/langs.util")
 const translate = require("../utils/translate.util")
-const { getConnection } = require("../utils/mongoose.util")
 
 const langsToTranslate = (lang) => langs.filter((e) => e != lang)
 
@@ -29,20 +28,16 @@ const getLang = (recipe, lang) => {
 class RecipeService {
     //Get all recipes
     async getRecipes(lang) {
-        const connection = getConnection()
-        const recipes = await connection.model("Recipe", RecipeModel.schema).find({}).populate("ingredients")
+        const recipes = await RecipeModel.find({}).populate("ingredients")
         return recipes.map((recipe) => getLang(recipe, lang))
     }
 
     async getRecipe(id) {
-        const connection = getConnection()
-        const recipe = await connection.model("Recipe", RecipeModel.schema).findById(id).populate("ingredients")
+        const recipe = await RecipeModel.findById(id).populate("ingredients")
         return getLang(recipe, "en")
     }
 
     async createRecipe(recipe) {
-        const connection = getConnection()
-
         let { author, title, description, steps, ingredients, tags, categories, ...other } = recipe
 
         switch (true) {
@@ -85,19 +80,19 @@ class RecipeService {
             })
         )
 
-        const user = await connection.model("User", UserModel.schema).findById(author)
+        const user = await UserModel.findById(author)
 
-        const checkIngredients = await connection.model("Ingredient", IngredientModel.schema).find({
+        const checkIngredients = await IngredientModel.find({
             _id: {
                 $in: ingredients,
             },
         })
-        const checkTags = await connection.model("Tag", TagModel.schema).find({
+        const checkTags = await TagModel.find({
             _id: {
                 $in: tags,
             },
         })
-        const checkCategories = await connection.model("Category", CategoryModel.schema).find({
+        const checkCategories = await CategoryModel.find({
             _id: {
                 $in: categories,
             },
@@ -125,8 +120,7 @@ class RecipeService {
             ...other,
         }
 
-        const newRecipe = new connection.model("Recipe", RecipeModel.schema)
-        const savedRecipe = await newRecipe.create(createdRecipe)
+        const savedRecipe = await RecipeModel.create(createdRecipe)
 
         await savedRecipe.save()
         return savedRecipe
@@ -156,7 +150,6 @@ class RecipeService {
 }
 
 async function genTranslate(body, flag, schema) {
-    const connection = getConnection()
     const { value, lang } = body[flag][0]
 
     switch (true) {
@@ -177,8 +170,9 @@ async function genTranslate(body, flag, schema) {
         })
         .then(async () => {
             let model = flag.charAt(0).toUpperCase() + flag.slice(1)
-            const newModel = connection.model(model, schema)
-            const savedModel = await newModel.create({ [flag]: data })
+            // const newModel = connection.model(model, schema)
+            // const savedModel = await newModel.create({ [flag]: data })
+            const savedModel = await eval(`${model}Model.create({ [flag]: data })`)
             return savedModel
         })
         .catch((error) => {

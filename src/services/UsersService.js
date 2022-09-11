@@ -1,11 +1,8 @@
 const UserModel = require("../models/UserModel.js")
 const RoleModel = require("../models/RoleModel.js")
-const { getConnection } = require("../utils/mongoose.util")
 class UsersService {
     async getAllUsers(query, type) {
-        const connection = getConnection()
-
-        const roles = await connection.model("Role", RoleModel.schema).find({})
+        const roles = await RoleModel.find({})
         const validRoles = roles.map((role) => {
             return {
                 _id: role._id,
@@ -19,9 +16,7 @@ class UsersService {
 
         const role = validRoles.find((role) => role.role === type)
 
-        const users = await connection
-            .model("User", UserModel.schema)
-            .find({ roles: role._id })
+        const users = await UserModel.find({ roles: role._id })
             .skip(query.skip)
             .limit(query.limit)
             .sort(query.sort)
@@ -31,42 +26,34 @@ class UsersService {
     }
 
     async getPages(query) {
-        const connection = getConnection()
-        const pages = await connection.model("User", UserModel.schema).countDocuments()
+        const pages = await UserModel.countDocuments()
         return Math.ceil(pages / query.limit)
     }
 
     async getUser(id, query) {
-        const connection = getConnection()
-        const user = await connection.model("User", UserModel.schema).findById(id).populate(query.populate)
+        const user = await UserModel.findById(id).populate(query.populate)
         const { password, ...others } = user._doc
         return others
     }
 
     async deleteUser(id) {
-        const connection = getConnection()
-        const user = await connection.model("User", UserModel.schema).findByIdAndDelete(id)
+        const user = await UserModel.findByIdAndDelete(id)
         return user
     }
 
     async getRoles() {
-        const connection = getConnection()
-        const roles = await connection.model("Role", RoleModel.schema).find({})
+        const roles = await RoleModel.find({})
         return roles
     }
 
     async updateUser(id, body) {
-        const connection = getConnection()
-
         // const { username, email, roles } = await connection
         //     .model("User", UserModel.schema)
         //     .findById(id)
         //     .populate("roles")
 
-        const user = await connection.model("User", UserModel.schema).findByIdAndUpdate(id, body).populate("roles")
-        // console.log(username, email, roles)
+        const user = await UserModel.findByIdAndUpdate(id, body).populate("roles")
 
-        // console.log(body)
         return user
     }
 }

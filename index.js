@@ -12,6 +12,7 @@ const bodyPrser = require("body-parser")
 const cookieParser = require("cookie-parser")
 const expressSession = require("express-session")
 const MongoDBStore = require("connect-mongodb-session")
+const mongoose = require("mongoose")
 
 dotenv.config()
 
@@ -22,7 +23,6 @@ const { connect } = require("./src/utils/mongoose.util.js")
 // Connect to the database
 const port = process.env.PORT || 3000
 const URI = process.env.MONGO_URI
-connect(URI)
 
 const mongoStore = new MongoDBStore(expressSession)
 const store = new mongoStore({
@@ -32,6 +32,13 @@ const store = new mongoStore({
 })
 // App initialization
 const app = express()
+
+mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: false }).then(() => {
+    console.log("Connected to database")
+    app.listen(process.env.PORT, () => {
+        console.log("Server started on port " + port)
+    })
+})
 
 let sess = {
     name: "session",
@@ -72,7 +79,3 @@ app.use("/api/users", userRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/recipes", recipeRoutes)
 app.use("/api/tasks", taskRoutes)
-
-app.listen(process.env.PORT, () => {
-    console.log("Server started on port " + port)
-})

@@ -33,13 +33,6 @@ const store = new mongoStore({
 // App initialization
 const app = express()
 
-mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: false }).then(() => {
-    console.log("Connected to database")
-    app.listen(process.env.PORT, () => {
-        console.log("Server started on port " + port)
-    })
-})
-
 let sess = {
     name: "session",
     secret: process.env.SESSION_SECRET,
@@ -79,3 +72,10 @@ app.use("/api/users", userRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/recipes", recipeRoutes)
 app.use("/api/tasks", taskRoutes)
+
+mongoose.connect(URI).then(() => {
+    console.log("Connected to database")
+    app.listen(process.env.PORT, () => {
+        console.log("Server started on port " + port)
+    })
+})

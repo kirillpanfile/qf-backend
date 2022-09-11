@@ -15,6 +15,7 @@ specifiers:
   http: 0.0.1-security
   https: ^1.0.0
   jsonwebtoken: ^8.5.1
+  mongodb: ^4.9.1
   mongoose: ^6.5.2
   node-fetch: ^3.2.10
   nodemon: ^2.0.19
@@ -34,6 +35,7 @@ dependencies:
   http: 0.0.1-security
   https: 1.0.0
   jsonwebtoken: 8.5.1
+  mongodb: 4.9.1
   mongoose: 6.5.2
   node-fetch: 3.2.10
   nodemon: 2.0.19
@@ -406,7 +408,7 @@ packages:
     resolution: {integrity: sha512-HBfQW7lRLb64DopgxL4Pv8/iay4HcS1WU7YJfi7B8UbBPZGzVEHx67mx8xP5c2rWUMCQ4Xi/u4GUSC7e90Hhtw==}
     dependencies:
       archetype: 0.13.0
-      mongodb: 4.8.1
+      mongodb: 4.9.1
     dev: false
 
   /console-control-strings/1.1.0:
@@ -1375,6 +1377,18 @@ packages:
 
   /mongodb/4.8.1:
     resolution: {integrity: sha512-/NyiM3Ox9AwP5zrfT9TXjRKDJbXlLaUDQ9Rg//2lbg8D2A8GXV0VidYYnA/gfdK6uwbnL4FnAflH7FbGw3TS7w==}
+    engines: {node: '>=12.9.0'}
+    dependencies:
+      bson: 4.7.0
+      denque: 2.1.0
+      mongodb-connection-string-url: 2.5.3
+      socks: 2.7.0
+    optionalDependencies:
+      saslprep: 1.0.3
+    dev: false
+
+  /mongodb/4.9.1:
+    resolution: {integrity: sha512-ZhgI/qBf84fD7sI4waZBoLBNJYPQN5IOC++SBCiPiyhzpNKOxN/fi0tBHvH2dEC42HXtNEbFB0zmNz4+oVtorQ==}
     engines: {node: '>=12.9.0'}
     dependencies:
       bson: 4.7.0

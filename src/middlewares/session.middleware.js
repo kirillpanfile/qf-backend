@@ -1,5 +1,3 @@
-const RoleModel = require("../models/RoleModel.js")
-
 class SessionMiddleware {
     async verifySession(req, res, next) {
         const session = req.session

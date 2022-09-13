@@ -1,4 +1,5 @@
 const RecipeModel = require("../models/RecipeModel")
+const mongoose = require("mongoose")
 const UserModel = require("../models/UserModel")
 const TagModel = require("../models/TagModel")
 const CategoryModel = require("../models/CategoryModel")
@@ -170,9 +171,10 @@ async function genTranslate(body, flag, schema) {
         })
         .then(async () => {
             let model = flag.charAt(0).toUpperCase() + flag.slice(1)
-            // const newModel = connection.model(model, schema)
+            // const newModel = mongoose.connection.model(model, schema)
             // const savedModel = await newModel.create({ [flag]: data })
             const savedModel = await eval(`${model}Model.create({ [flag]: data })`)
+            // const savedModel = await TagModel.create({ [flag]: data })
             return savedModel
         })
         .catch((error) => {

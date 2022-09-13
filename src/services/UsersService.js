@@ -41,18 +41,20 @@ class UsersService {
         return user
     }
 
+    async deleteMultipleUsers(ids) {
+        const users = await UserModel.deleteMany({ _id: { $in: ids } })
+        return users
+    }
+
     async getRoles() {
         const roles = await RoleModel.find({})
         return roles
     }
 
     async updateUser(id, body) {
-        // const { username, email, roles } = await connection
-        //     .model("User", UserModel.schema)
-        //     .findById(id)
-        //     .populate("roles")
-
-        const user = await UserModel.findByIdAndUpdate(id, body).populate("roles")
+        const user = await UserModel.findByIdAndUpdate(id, body, {
+            new: true,
+        }).populate("roles")
 
         return user
     }

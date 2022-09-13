@@ -70,6 +70,15 @@ class UsersController {
             return res.status(500).send(err)
         }
     }
+
+    async getByName(req, res) {
+        try {
+            const users = await UsersService.getByName(req.params.name)
+            return res.status(200).json(users)
+        } catch (err) {
+            return res.status(500).send(err)
+        }
+    }
 }
 
 module.exports = new UsersController()

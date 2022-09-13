@@ -17,7 +17,6 @@ router.get("/pages", [verifySession, isAdmin], getPages)
 router.get("/:id", verifySession, getUser)
 router.delete("/:id", [verifySession, isAdmin], deleteUser)
 router.delete("/multiple", [verifySession, isAdmin], deleteMultipleUsers)
-
 router.put("/update/:id", [verifySession, isAdmin], updateUser)
 
 module.exports = router

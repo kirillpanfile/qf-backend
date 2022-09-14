@@ -60,12 +60,7 @@ class UsersService {
     }
 
     async getByName(name) {
-        console.log(name)
-        //find all users that match the name by  username
-        const users = await UserModel.find({
-            username: { $regex: name, $options: "i" },
-        }).populate("roles")
-
+        const users = await UserModel.find({ username: { $regex: name, $options: "i" } }).populate("roles")
         return users
     }
 }

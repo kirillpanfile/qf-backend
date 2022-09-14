@@ -19,7 +19,7 @@ class AuthController {
             req.session.user = { _id, username, email, roles }
 
             return res.status(200).send(others)
-        } catch (error) {
+        } catch (err) {
             error.status
                 ? res.status(error.status).json({ message: error.message })
                 : res.status(400).json({ message: error.message })
@@ -36,7 +36,7 @@ class AuthController {
         } catch (error) {
             error.status
                 ? res.status(error.status).json({ message: error.message })
-                : res.status(400).json({ message: error.message })
+                : res.status(400).json({ message: error })
         }
     }
 
@@ -48,7 +48,7 @@ class AuthController {
         } catch (error) {
             error.status
                 ? res.status(error.status).json({ message: error.message })
-                : res.status(400).json({ message: error.message })
+                : res.status(400).json({ message: error })
         }
     }
 }

@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
         roles: [{ type: mongoose.Schema.Types.ObjectId, required: true, ref: "Role" }],
         recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
         favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
-        picture: { type: String, required: true, default: defaultPicture },
+        picture: { type: String, default: defaultPicture },
     },
     { timestamps: true }
 )

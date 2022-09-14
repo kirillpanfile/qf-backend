@@ -1,4 +1,4 @@
-const UserModel = require("../models/UserModel.js")
+const UserModel = require("../models/UserModel")
 const RoleModel = require("../models/RoleModel.js")
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
@@ -8,28 +8,25 @@ const saltRounds = 10
 class AuthService {
     async signUp({ username, email, password }) {
         if (!username || !email || !password) {
-            throw new Error({
-                status: 400,
-                message: "Missing username, email or password",
-            })
+            throw new Error("Missing username, email or password")
         }
 
         const checkUser = await UserModel.findOne({ username })
-        if (checkUser) throw new Error("User already exist")
+        if (checkUser) throw Error("User already exist")
         const checkEmail = await UserModel.findOne({ email })
-        if (checkEmail) throw new Error("Email already exist")
-
+        console.log(checkEmail)
+        if (checkEmail) throw Error("Email already exist")
         const salt = await bcrypt.genSalt(saltRounds)
         const hash = await bcrypt.hash(password, salt)
 
         const roles = await RoleModel.find({ name: "ROLE_USER" })
-        const newUser = await UserModel.create({
-            username,
-            email,
-            password: hash,
-            roles: [roles._id],
-        })
-        return newUser
+
+        await UserModel.create({ username, email, password: hash, roles: roles[0]._id })
+
+        //populate roles
+        const user = await UserModel.findOne({ username }).populate("roles")
+
+        return user._doc
     }
 
     async signIn({ username, password }) {

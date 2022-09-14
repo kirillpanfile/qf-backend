@@ -38,6 +38,12 @@ class RecipeService {
         return getLang(recipe, "en")
     }
 
+    async getTags() {
+        console.log(1)
+        const tags = await TagModel.find({})
+        return tags
+    }
+
     async createRecipe(recipe) {
         let { author, title, description, steps, ingredients, tags, categories, ...other } = recipe
 

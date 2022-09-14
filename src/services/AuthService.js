@@ -6,22 +6,19 @@ const bcrypt = require("bcrypt")
 const saltRounds = 10
 
 class AuthService {
-    async signUp({ username, email, password }) {
-        if (!username || !email || !password) {
-            throw new Error("Missing username, email or password")
-        }
+    async signUp({ username, email, password, picture }) {
+        if (!username || !email || !password || !picture) throw new Error("Missing username, email or password")
 
         const checkUser = await UserModel.findOne({ username })
         if (checkUser) throw Error("User already exist")
         const checkEmail = await UserModel.findOne({ email })
-        console.log(checkEmail)
         if (checkEmail) throw Error("Email already exist")
         const salt = await bcrypt.genSalt(saltRounds)
         const hash = await bcrypt.hash(password, salt)
 
         const roles = await RoleModel.find({ name: "ROLE_USER" })
 
-        await UserModel.create({ username, email, password: hash, roles: roles[0]._id })
+        await UserModel.create({ username, email, password: hash, roles: roles[0]._id, picture })
 
         //populate roles
         const user = await UserModel.findOne({ username }).populate("roles")

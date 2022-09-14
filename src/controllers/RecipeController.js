@@ -63,6 +63,12 @@ class RecipeController {
                 : res.status(400).json({ message: error.message })
         }
     }
+
+    async getTags(req, res) {
+        console.log(1)
+        const tags = await RecipeService.getTags()
+        return res.status(200).json(tags)
+    }
 }
 
 module.exports = new RecipeController()

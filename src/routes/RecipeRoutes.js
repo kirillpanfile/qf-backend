@@ -8,12 +8,15 @@ const {
     updateRecipe,
     createMore,
     getTags,
+    getCategories,
 } = require("../controllers/RecipeController.js")
 
 router.post("/more/create/:flag", createMore)
 router.post("/create", createRecipe)
 router.get("/all/:lang", getRecipes)
-router.get("/tags", getTags)
+router.get("/tags/:lang", getTags)
+router.get("/categories/:lang", getCategories)
+// router.get("/tags/:lang", getTags)
 
 router.get("/:id", getRecipe)
 router.put("/:id", updateRecipe)

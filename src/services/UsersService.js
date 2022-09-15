@@ -60,6 +60,7 @@ class UsersService {
     }
 
     async getByName(name) {
+        if (!name) throw new Error("Invalid name")
         const users = await UserModel.find({ username: { $regex: name, $options: "i" } }).populate("roles")
         return users
     }

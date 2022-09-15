@@ -65,9 +65,13 @@ class RecipeController {
     }
 
     async getTags(req, res) {
-        console.log(1)
-        const tags = await RecipeService.getTags()
+        const tags = await RecipeService.getTags(req.params.lang)
         return res.status(200).json(tags)
+    }
+
+    async getCategories(req, res) {
+        const categories = await RecipeService.getCategories(req.params.lang)
+        return res.status(200).json(categories)
     }
 }
 

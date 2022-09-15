@@ -10,7 +10,7 @@ const translate = require("../utils/translate.util")
 
 const langsToTranslate = (lang) => langs.filter((e) => e != lang)
 
-//get recipe by current language selected
+//get recipe by current language selected -- ? maybe not needed
 const getLang = (recipe, lang) => {
     try {
         const { title, description, steps, ingredients, ...other } = recipe._doc
@@ -33,20 +33,41 @@ class RecipeService {
         return recipes.map((recipe) => getLang(recipe, lang))
     }
 
+    // Get recipe by id
     async getRecipe(id) {
         const recipe = await RecipeModel.findById(id).populate("ingredients")
         return getLang(recipe, "en")
     }
 
-    async getTags() {
-        console.log(1)
+    async getCategories(lang) {
+        const categories = await CategoryModel.find({})
+        return categories.map((category) => {
+            return {
+                _id: category._id,
+                category: category.category.filter((e) => e.lang == lang)[0],
+            }
+        })
+    }
+
+    async getTags(lang) {
+        //find where lang is equal to lang
         const tags = await TagModel.find({})
-        return tags
+
+        //map and retunr only the value of the lang
+
+        return tags.map((tag) => {
+            return {
+                _id: tag._id,
+                // filters the lang and returns the value
+                tag: tag.tag.filter((e) => e.lang == lang)[0].value,
+            }
+        })
     }
 
     async createRecipe(recipe) {
         let { author, title, description, steps, ingredients, tags, categories, ...other } = recipe
 
+        // Check if all fields are filled
         switch (true) {
             case !author:
                 throw new Error("Author is required")
@@ -64,18 +85,20 @@ class RecipeService {
                 throw new Error("Categories is required")
         }
 
+        // Translate title - returns a promise array
         const translatedTitle = await Promise.all(
             langsToTranslate(title[0].lang).map(async (e) => {
                 return await translate({ from: title[0].lang, to: e, value: title[0].value })
             })
         )
+        // Translate description - returns a promise array
 
         const translatedDescription = await Promise.all(
             langsToTranslate(description[0].lang).map(async (e) => {
                 return await translate({ from: description[0].lang, to: e, value: description[0].value })
             })
         )
-
+        // Translate steps - returns nothing
         await Promise.all(
             langsToTranslate(steps[0].lang).map(async (e) => {
                 let step = { lang: e, value: [] }
@@ -83,6 +106,7 @@ class RecipeService {
                     const translatedStep = await translate({ from: steps[0].lang, to: e, value: i })
                     step.value.push(translatedStep.value)
                 }
+                //automatic adding to steps
                 steps.push(step)
             })
         )
@@ -191,3 +215,15 @@ async function genTranslate(body, flag, schema) {
 }
 
 module.exports = new RecipeService()
+
+// Vegetables
+// Fruits
+// Meat
+// Dairy
+// Grains
+// Legumes
+// Baked Goods
+// Seafood
+// Nuts and seeds
+// Herbs and Spices
+// Garnishes

@@ -7,7 +7,8 @@ const saltRounds = 10
 
 class AuthService {
     async signUp({ username, email, password, picture }) {
-        if (!username || !email || !password || !picture) throw new Error("Missing username, email or password")
+        console.log(username, email, password)
+        if (!username || !email || !password) throw new Error("Missing username, email or password")
 
         const checkUser = await UserModel.findOne({ username })
         if (checkUser) throw Error("User already exist")
@@ -18,7 +19,11 @@ class AuthService {
 
         const roles = await RoleModel.find({ name: "ROLE_USER" })
 
-        await UserModel.create({ username, email, password: hash, roles: roles[0]._id, picture })
+        const newUser = { username, email, password: hash, roles: roles[0]._id }
+
+        if (picture) newUser.picture = picture
+
+        await UserModel.create(newUser)
 
         //populate roles
         const user = await UserModel.findOne({ username }).populate("roles")

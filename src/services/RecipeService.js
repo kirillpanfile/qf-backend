@@ -49,6 +49,26 @@ class RecipeService {
         })
     }
 
+    async getIngredients(lang) {
+        const ingredients = await IngredientModel.find({})
+        return ingredients.map((ingredient) => {
+            return {
+                _id: ingredient._id,
+                ingredient: ingredient.ingredient.filter((e) => e.lang == lang)[0],
+            }
+        })
+    }
+
+    async getUnits(lang) {
+        const units = await UnitModel.find({})
+        return units.map((unit) => {
+            return {
+                _id: unit._id,
+                unit: unit.unit.filter((e) => e.lang == lang)[0],
+            }
+        })
+    }
+
     async getTags(lang) {
         //find where lang is equal to lang
         const tags = await TagModel.find({})

@@ -73,6 +73,16 @@ class RecipeController {
         const categories = await RecipeService.getCategories(req.params.lang)
         return res.status(200).json(categories)
     }
+
+    async getIngredients(req, res) {
+        const ingredients = await RecipeService.getIngredients(req.params.lang)
+        return res.status(200).json(ingredients)
+    }
+
+    async getUnits(req, res) {
+        const units = await RecipeService.getUnits(req.params.lang)
+        return res.status(200).json(units)
+    }
 }
 
 module.exports = new RecipeController()

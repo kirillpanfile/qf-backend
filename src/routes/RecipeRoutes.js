@@ -9,14 +9,18 @@ const {
     createMore,
     getTags,
     getCategories,
+    getIngredients,
+    getUnits,
 } = require("../controllers/RecipeController.js")
 
 router.post("/more/create/:flag", createMore)
 router.post("/create", createRecipe)
 router.get("/all/:lang", getRecipes)
+
 router.get("/tags/:lang", getTags)
 router.get("/categories/:lang", getCategories)
-// router.get("/tags/:lang", getTags)
+router.get("/ingredients/:lang", getIngredients)
+router.get("/units/:lang", getUnits)
 
 router.get("/:id", getRecipe)
 router.put("/:id", updateRecipe)

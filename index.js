@@ -18,7 +18,6 @@ dotenv.config()
 
 // Import utils and configs
 const { corsOptions, compressOptions } = require("./src/configs/config.js")
-const { connect } = require("./src/utils/mongoose.util.js")
 
 // Connect to the database
 const port = process.env.PORT || 3000
@@ -62,6 +61,10 @@ app.use(compression(compressOptions))
 app.use(bodyPrser.urlencoded({ extended: true }))
 app.use(bodyPrser.json())
 
+mongoose.connect(URI).then(() => {
+    console.log("Connected to database")
+})
+
 //Routes
 const userRoutes = require("./src/routes/UserRoutes.js")
 const authRoutes = require("./src/routes/AuthRoutes.js")
@@ -73,9 +76,6 @@ app.use("/api/auth", authRoutes)
 app.use("/api/recipes", recipeRoutes)
 app.use("/api/tasks", taskRoutes)
 
-mongoose.connect(URI).then(() => {
-    console.log("Connected to database")
-    app.listen(process.env.PORT, () => {
-        console.log("Server started on port " + port)
-    })
+app.listen(process.env.PORT, () => {
+    console.log("Server started on port " + port)
 })
